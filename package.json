@@ -1,0 +1,16 @@
+{
+  "name": "tile-enumeriator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tile-generator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mapbox/sphericalmercator": "^1.1.0",
+    "@mapbox/tilebelt": "^1.0.2",
+    "geojson-vt": "^3.2.1"
+  }
+}
