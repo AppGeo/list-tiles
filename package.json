@@ -1,16 +1,23 @@
 {
-  "name": "tile-enumeriator",
+  "name": "list-tiles",
   "version": "1.0.0",
-  "description": "",
-  "main": "tile-generator.js",
+  "description": "list all the tiles a geojson intersects",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Calvin W. Metcalf <cmetcalf@appgeo.com>",
+  "bin": "./bin.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/AppGeo/list-tiles.git"
+  },
+  "license": "MIT",
   "dependencies": {
     "@mapbox/sphericalmercator": "^1.1.0",
     "@mapbox/tilebelt": "^1.0.2",
-    "geojson-vt": "^3.2.1"
+    "@turf/bbox": "^6.3.0",
+    "geojson-vt": "^3.2.1",
+    "yargs": "^16.2.0"
   }
 }
