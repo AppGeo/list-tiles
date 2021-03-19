@@ -1,13 +1,15 @@
 {
   "name": "list-tiles",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "list all the tiles a geojson intersects",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Calvin W. Metcalf <cmetcalf@appgeo.com>",
-  "bin": "./bin.js",
+  "bin": {
+    "list-tiles": "bin.js"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/AppGeo/list-tiles.git"
