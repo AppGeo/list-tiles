@@ -32,5 +32,5 @@ try {
   console.error('invalid json object');
   process.exit(3);
 }
-const gen = new TileGenerator(json, argv.M, argv.m, argv.t)
-gen.run();
+const genrator = new TileGenerator(json, argv.M, argv.m, argv.t);
+genrator.pipe(process.stdout);

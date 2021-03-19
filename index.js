@@ -2,13 +2,19 @@ const SphericalMercator = require('@mapbox/sphericalmercator');
 const merc = new SphericalMercator({
     size: 256
 });
+const IterStream = require('./stream');
 const getBoundingBox= require('@turf/bbox').default;
 const tilebelt = require('@mapbox/tilebelt');
 const geojsonvt = require('geojson-vt');
 const checkFeatures = require('./check-feature')
-const getBoundingBox = () => {};
 const EMPTY_ARRAY = [];
 const DEFAULT_TEMPLATE = '/{z}/{x}/{y}'
+class Result {
+  constructor(done, value) {
+    this.done = done;
+    this.value = value;
+  }
+}
 class TileGenerator {
   constructor(json, maxDepth=20, minDepth=6, template=DEFAULT_TEMPLATE){
     this.maxDepth = maxDepth;
@@ -18,7 +24,7 @@ class TileGenerator {
     this.queue = [];
     this.populateQueue(json);
     if (this.template === DEFAULT_TEMPLATE) {
-      this.log = this._log;
+      this.format = this._format;
     }
   }
   populateQueue(json) {
@@ -39,22 +45,20 @@ class TileGenerator {
       }
     }
   }
-  run () {
-    while(this.queue.length) {
-      const tile = this.queue.pop();
-      const children = this.getChildren(tile);
-      if (children.length) {
-         this.queue.push(...children);
-      }
+  next() {
+    if (!this.queue.length) {
+      return new Result(true);
     }
+    const tile = this.queue.pop();
+    const children = this.getChildren(tile);
+    if (children.length) {
+       this.queue.push(...children);
+    }
+    return new Result(false, this.format(tile))
   }
   getChildren(tile) {
-    this.log(tile);
     if (tile[2] === this.maxDepth) {
       return EMPTY_ARRAY;
-    }
-    if (tile[2] + 1 === this.maxDepth) {
-      return this.getPenultimateChildren(tile);
     }
     const children = tilebelt.getChildren(tile);
 
@@ -79,33 +83,23 @@ class TileGenerator {
     }
     return out;
   }
-  getPenultimateChildren (tile) {
-    let children = tilebelt.getChildren(tile);
-    if (tile.length === 3 || !tile[3]) {
-      for (const child of children) {
-        const outline = this.index.getTile(child[2], child[0], child[1]);
-        if (!outline || !outline.features || !outline.features.length) {
-          continue;
-        }
-        this.log(child);
-      }
-    } else {
-      for (const child of children) {
-        this.log(child);
-      }
-    }
-    return EMPTY_ARRAY;
+  _format(tile) {
+    return `/${tile[2]}/${tile[0]}/${tile[1]}`;
   }
-  _log(tile) {
-    console.log(`/${tile[2]}/${tile[0]}/${tile[1]}`)
-  }
-  log(tile) {
-    console.log(
-      this.template
+  format(tile) {
+    return this.template
         .replace('{x}', tile[0])
         .replace('{y}', tile[1])
-        .replace('{z}', tile[2])
-      )
+        .replace('{z}', tile[2]);
+  }
+  [Symbol.iterator]() {
+    return this;
+  }
+  stream() {
+    return new IterStream(this);
+  }
+  pipe(...args) {
+    return this.stream().pipe(...args);
   }
 }
 module.exports = TileGenerator;
